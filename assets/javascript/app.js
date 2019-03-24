@@ -59,5 +59,14 @@ var triviaGame = {
     }
 }
 
+//Question Definition Area
+// jumbotron
+// container
+// animate
+// shadowbox
+// media sizing differences
+// play video in background
+// 
+// 
 
 //dom .on("click", ) Area.
