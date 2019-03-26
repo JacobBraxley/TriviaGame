@@ -60,13 +60,13 @@ var triviaGame = {
 }
 
 //Question Definition Area
-// jumbotron
-// container
-// animate
-// shadowbox
-// media sizing differences
-// play video in background
-// 
-// 
+// jumbotron,  Which of the component is used for a primary display area?   bigscreen, jumbotron, maindisplay, div
+// container, Which of the following is used to define a bootstrap grid?  box, grid, container, object
+// animate,  Which do you use to change the style of an item from one state to another? animate, new, change, overwrite
+// shadowbox What class do I include to create shadow boxes with Bootstrap?  fade, depth, shadow, borderbox
+// media sizing differences 2
+// play video in background 4
+// 1
+// 3
 
 //dom .on("click", ) Area.

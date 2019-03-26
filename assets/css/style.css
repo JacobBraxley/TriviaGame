@@ -1,0 +1,9 @@
+body {
+    background-color: red;
+}
+
+#mainContainer {
+    margin: 2% 15%;
+    background-color: yellow;
+    height: 92vh;
+}
