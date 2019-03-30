@@ -6,11 +6,12 @@ const TriviaQuestion = class  TriviaItem {
     }
 
     evaluateGuess(guess) {
-        return (this.correctAnswerIndex === this.possibleAnswers.indexof(guess));
+        debugger;
+        return (this.correctAnswerIndex === this.possibleAnswers.indexOf(guess));
     }
 }
 
-var currentlyShowing = false;
+const currentlyShowing = false;
 
 function questionTime(show = true) {
     if(currentlyShowing != show) {
@@ -34,12 +35,12 @@ function questionTime(show = true) {
     }
 }
 
-var triviaGame = {
+const triviaGame = {
     correctAnswers: 0,
     incorrectAnswers: 0,
     unanswered: 0,
 
-    timeoutForAQuestion: 4,
+    timeoutForAQuestion: 15,
     timeTilNextQuestion: 2,
 
     questions: [],
@@ -47,23 +48,23 @@ var triviaGame = {
 
     timer: undefined,
 
-    guess: function(guess) {
+    answerQuestion: function(guess) {
+        // debugger;
         clearInterval(this.timer);
-        var right = this.questions[this.questionIndex].evaluateGuess(guess);
+        const right = this.questions[this.questionIndex].evaluateGuess(guess);
         if(right) {
             this.correctAnswers++;
             //TODO - Video
-            setTimeout(this.loadNextQuestion, this.timeTilNextQuestion * 1000);
         } else {
             this.incorrectAnswers++;
             //TODO - Video
-            setTimeout(this.loadNextQuestion, this.timeTilNextQuestion * 1000);
         }
-        loadNextQuestion();
+        
+        setTimeout(()=>{this.loadNextQuestion()}, this.timeTilNextQuestion * 1000);
     },
 
     tick: function() {
-        var time = Number($("#timeLeft").text()) - 1;
+        const time = Number($("#timeLeft").text()) - 1;
         $("#timeLeft").text(time);
 
         if(time <= 0) { //timeout, fail condition.
@@ -71,13 +72,14 @@ var triviaGame = {
             clearInterval(this.timer);
             this.unanswered++;
             //TODO - load timeout video.
-            setTimeout(this.loadNextQuestion, this.timeTilNextQuestion * 1000);
+            setTimeout(() => {this.loadNextQuestion();}, this.timeTilNextQuestion * 1000);
         }
     },
 
     loadNextQuestion: function() {
         questionTime(true);
         //Boring but we're just going to keep iterating through the list.
+        debugger;
         this.questionIndex++;
         if(this.questionIndex >= this.questions.length) {
             this.triggerEndScreen();
@@ -85,15 +87,12 @@ var triviaGame = {
         else {
             $("#timeLeft").text(this.timeoutForAQuestion);
             $(".question").text(this.questions[this.questionIndex].question);
-            $(".option1").text(this.questions[this.questionIndex].possibleAnswers[0]);
-            $(".option2").text(this.questions[this.questionIndex].possibleAnswers[1]);
-            $(".option3").text(this.questions[this.questionIndex].possibleAnswers[2]);
-            $(".option4").text(this.questions[this.questionIndex].possibleAnswers[3]);
+            $("#option1").text(this.questions[this.questionIndex].possibleAnswers[0]);
+            $("#option2").text(this.questions[this.questionIndex].possibleAnswers[1]);
+            $("#option3").text(this.questions[this.questionIndex].possibleAnswers[2]);
+            $("#option4").text(this.questions[this.questionIndex].possibleAnswers[3]);
            
-            this.timer = setInterval(this.tick, 1000);
-            if(++this.questionIndex == this.questions.length) {
-                this.triggerEndScreen();
-            }
+            this.timer = setInterval(() => {this.tick();}, 1000);
         }
     },
 
@@ -102,12 +101,28 @@ var triviaGame = {
 
     },
 
+    mixUpTheQuestions: function() {
+        let currentIndex = this.questions.length, temporaryValue, randomIndex;
+      
+        while (0 !== currentIndex) {      
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex -= 1;
+      
+          temporaryValue = this.questions[currentIndex];
+          this.questions[currentIndex] = this.questions[randomIndex];
+          this.questions[randomIndex] = temporaryValue;
+        }
+      },
+      
+
     resetGame: function() {
         this.correctAnswers = 0;
         this.incorrectAnswers = 0;
         this.unanswered = 0;
         this.questionIndex = -1; 
-        loadNextQuestion();
+
+        this.mixUpTheQuestions();        
+        this.loadNextQuestion();
     }
 }
 
@@ -126,7 +141,12 @@ function setQuestions() {
 }
 setQuestions();  //There isn't much use for defining the function at this time.
 
+
 //dom events
 $("#start").on("click", function() {
     triviaGame.loadNextQuestion();
+});
+
+$(".options").on("click", function() {
+    triviaGame.answerQuestion(this.innerText);
 });
