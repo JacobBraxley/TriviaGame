@@ -13,20 +13,11 @@ const TriviaQuestion = class TriviaItem {
 
 const currentlyShowing = false;
 
-function questionTime(show = true) {
-    if (currentlyShowing != show) {
-        if (show) {
-            $("#start").addClass("d-none");
-            $(".timeSection").removeClass("d-none");
-            $(".question").removeClass("d-none");
-            $(".options").removeClass("d-none");
-        } else {
-            // $("#start").removeClass("d-none");
-            // $(".timeSection").addClass("d-none");
-            // $(".question").addClass("d-none");
-            // $(".options").addClass("d-none");
-        }
-    }
+function showQuestions() {
+    $("#start").addClass("d-none");
+    $(".timeSection").removeClass("d-none");
+    $(".question").removeClass("d-none");
+    $(".options").removeClass("d-none");
 }
 
 const triviaGame = {
@@ -45,6 +36,7 @@ const triviaGame = {
     answerQuestion: function (guess) {
         clearInterval(this.timer);
         const right = this.questions[this.questionIndex].evaluateGuess(guess);
+        debugger;
         if (right) {
             this.correctAnswers++;
             confetti.start();
@@ -74,7 +66,6 @@ const triviaGame = {
 
     loadNextQuestion: function () {
         confetti.stop();
-        questionTime(true);
         this.questionIndex++;
         if (this.questionIndex >= this.questions.length) {
             this.triggerEndScreen();
@@ -92,20 +83,19 @@ const triviaGame = {
     },
 
     triggerEndScreen: function () {
-        questionTime(false);
-    },
+        
 
-    mixUpTheQuestions: function () {
-        let currentIndex = this.questions.length, temporaryValue, randomIndex;
+        $(".timeSection").addClass("d-none");
+        $(".options").addClass("d-none");
+        $(".question").html(`
+        All done, heres how you did!<br>
+        Correct Answers: ${this.correctAnswers}<br>
+        Incorrect Answers: ${this.incorrectAnswers}<br>
+        Unanswered: ${this.unanswered}
+        `);
 
-        while (0 !== currentIndex) {
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-
-            temporaryValue = this.questions[currentIndex];
-            this.questions[currentIndex] = this.questions[randomIndex];
-            this.questions[randomIndex] = temporaryValue;
-        }
+        $("#start").text("Start over?");
+        $("#start").removeClass("d-none");
     },
 
     resetGame: function () {
@@ -114,7 +104,7 @@ const triviaGame = {
         this.unanswered = 0;
         this.questionIndex = -1;
 
-        this.mixUpTheQuestions();
+        setQuestions();
         this.loadNextQuestion();
     }
 }
@@ -214,7 +204,7 @@ class ConfettiFeature {
 
 //Question Definition Area
 function setQuestions() {
-    triviaGame.questions = [
+    let questions = [
         new TriviaQuestion("Which of the component is used for a primary display area?", 1, ["bigscreen", "jumbotron", "maindisplay", "div"]),
         new TriviaQuestion("Which of the following is used to define a bootstrap grid?", 2, ["box", "grid", "container", "object"]),
         new TriviaQuestion("Which do you use to change the style of an item from one state to another?", 0, ["animate", "new", "change", "overwrite"]),
@@ -224,14 +214,28 @@ function setQuestions() {
         new TriviaQuestion("Which of the following display types should you use to make a responsive element?", 0, ["flex", "block", "inline", "none"]),
         new TriviaQuestion("Which of the following should you use to select a class?", 2, ["#", "@", ".", "$"])
     ];
+
+    //Now lets randomize them.
+    let currentIndex = triviaGame.questions.length, temporaryValue, randomIndex;
+
+    while (0 !== currentIndex) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        temporaryValue = questions[currentIndex];
+        questions[currentIndex] = questions[randomIndex];
+        questions[randomIndex] = temporaryValue;
+    }
+
+    triviaGame.questions = questions;
 }
-setQuestions();  //There isn't much use for defining the function at this time.
 
 const confetti = new ConfettiFeature(50, 12, 0.4);
 
 //dom events
-$("#start").on("click", function () {
-    triviaGame.loadNextQuestion();
+$("#start").on("click", () => {    
+    triviaGame.resetGame();
+    showQuestions();
 });
 
 $(".options").on("click", function () {
