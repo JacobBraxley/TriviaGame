@@ -19,18 +19,12 @@ function questionTime(show = true) {
             $("#start").addClass("d-none");
             $(".timeSection").removeClass("d-none");
             $(".question").removeClass("d-none");
-            $(".option1").removeClass("d-none");
-            $(".option2").removeClass("d-none");
-            $(".option3").removeClass("d-none");
-            $(".option4").removeClass("d-none");
+            $(".options").removeClass("d-none");
         } else {
-            $("#start").removeClass("d-none");
-            $(".timeSection").addClass("d-none");
-            $(".question").addClass("d-none");
-            $(".option1").addClass("d-none");
-            $(".option2").addClass("d-none");
-            $(".option3").addClass("d-none");
-            $(".option4").addClass("d-none");
+            // $("#start").removeClass("d-none");
+            // $(".timeSection").addClass("d-none");
+            // $(".question").addClass("d-none");
+            // $(".options").addClass("d-none");
         }
     }
 }
@@ -49,15 +43,16 @@ const triviaGame = {
     timer: undefined,
 
     answerQuestion: function (guess) {
-        // debugger;
         clearInterval(this.timer);
         const right = this.questions[this.questionIndex].evaluateGuess(guess);
         if (right) {
             this.correctAnswers++;
             confetti.start();
+
         } else {
             this.incorrectAnswers++;
-            //TODO - Video
+            const audio = new Audio('assets/sounds/error.mp3');
+            audio.play();
         }
 
         setTimeout(() => { this.loadNextQuestion() }, this.timeTilNextQuestion * 1000);
@@ -68,18 +63,18 @@ const triviaGame = {
         $("#timeLeft").text(time);
 
         if (time <= 0) { //timeout, fail condition.
-            debugger;
+            const audio = new Audio('assets/sounds/confused.mp3');
+            audio.play();
+
             clearInterval(this.timer);
             this.unanswered++;
-            //TODO - load timeout video.
-            setTimeout(() => { this.loadNextQuestion(); }, this.timeTilNextQuestion * 1000);
+            setTimeout(() => { this.loadNextQuestion(); }, 4000); //Set to 4 seconds because the sound I'm playing is 4 seconds.
         }
     },
 
     loadNextQuestion: function () {
+        confetti.stop();
         questionTime(true);
-        //Boring but we're just going to keep iterating through the list.
-        debugger;
         this.questionIndex++;
         if (this.questionIndex >= this.questions.length) {
             this.triggerEndScreen();
@@ -98,7 +93,6 @@ const triviaGame = {
 
     triggerEndScreen: function () {
         questionTime(false);
-
     },
 
     mixUpTheQuestions: function () {
@@ -113,7 +107,6 @@ const triviaGame = {
             this.questions[randomIndex] = temporaryValue;
         }
     },
-
 
     resetGame: function () {
         this.correctAnswers = 0;
@@ -158,7 +151,7 @@ class ConfettiFeature {
     // HTML
     // a class of confettiArea in the appropriate area.
 
-    constructor(count = 250, width = 8, ratio = 0.4, options = ["Yes!"]) {
+    constructor(count = 250, width = 8, ratio = 0.4) {
         this.confettiAcount = count;
         this.confettiWidth = width;
         this.confettiRatio = ratio;
@@ -204,14 +197,9 @@ class ConfettiFeature {
 
     drop(x) {
         $('.confetti-' + x).animate({
-            top: "100%",
+            top: "105%", //To get it off the page.
             left: "+=" + Math.random() * 15 + "%"
         }, Math.random() * 3000 + 3000, () => { if (confetti.active) { confetti.reset(x); } });
-        // function() {
-        //     debugger;
-        //     if(this.active) {
-        //     this.reset(x);}
-        // });
     }
 
     reset(x) {
@@ -239,7 +227,7 @@ function setQuestions() {
 }
 setQuestions();  //There isn't much use for defining the function at this time.
 
-const confetti = new ConfettiFeature();
+const confetti = new ConfettiFeature(50, 12, 0.4);
 
 //dom events
 $("#start").on("click", function () {

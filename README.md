@@ -53,3 +53,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 ## Acknowledgments
 
 * Thanks to Stanley, Adam, Meguel, Matthew, and Lauren for answering questions in class.
+* Sound effects obtained from https://www.zapsplat.com
