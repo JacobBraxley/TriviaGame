@@ -6,7 +6,6 @@ const TriviaQuestion = class TriviaItem {
     }
 
     evaluateGuess(guess) {
-        debugger;
         return (this.correctAnswerIndex === this.possibleAnswers.indexOf(guess));
     }
 }
@@ -25,7 +24,7 @@ const triviaGame = {
     incorrectAnswers: 0,
     unanswered: 0,
 
-    timeoutForAQuestion: 15,
+    timeoutForAQuestion: 150000,
     timeTilNextQuestion: 2,
 
     questions: [],
@@ -36,7 +35,6 @@ const triviaGame = {
     answerQuestion: function (guess) {
         clearInterval(this.timer);
         const right = this.questions[this.questionIndex].evaluateGuess(guess);
-        debugger;
         if (right) {
             this.correctAnswers++;
             confetti.start();
