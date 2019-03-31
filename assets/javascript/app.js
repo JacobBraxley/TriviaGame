@@ -1,4 +1,4 @@
-const TriviaQuestion = class  TriviaItem {
+const TriviaQuestion = class TriviaItem {
     constructor(q = "Are you a Teapot?", answerIndex = 0, options = ["Yes!"]) {
         this.question = q;
         this.correctAnswerIndex = answerIndex;
@@ -14,8 +14,8 @@ const TriviaQuestion = class  TriviaItem {
 const currentlyShowing = false;
 
 function questionTime(show = true) {
-    if(currentlyShowing != show) {
-        if(show) {
+    if (currentlyShowing != show) {
+        if (show) {
             $("#start").addClass("d-none");
             $(".timeSection").removeClass("d-none");
             $(".question").removeClass("d-none");
@@ -48,40 +48,40 @@ const triviaGame = {
 
     timer: undefined,
 
-    answerQuestion: function(guess) {
+    answerQuestion: function (guess) {
         // debugger;
         clearInterval(this.timer);
         const right = this.questions[this.questionIndex].evaluateGuess(guess);
-        if(right) {
+        if (right) {
             this.correctAnswers++;
-            //TODO - Video
+            confetti.start();
         } else {
             this.incorrectAnswers++;
             //TODO - Video
         }
-        
-        setTimeout(()=>{this.loadNextQuestion()}, this.timeTilNextQuestion * 1000);
+
+        setTimeout(() => { this.loadNextQuestion() }, this.timeTilNextQuestion * 1000);
     },
 
-    tick: function() {
+    tick: function () {
         const time = Number($("#timeLeft").text()) - 1;
         $("#timeLeft").text(time);
 
-        if(time <= 0) { //timeout, fail condition.
+        if (time <= 0) { //timeout, fail condition.
             debugger;
             clearInterval(this.timer);
             this.unanswered++;
             //TODO - load timeout video.
-            setTimeout(() => {this.loadNextQuestion();}, this.timeTilNextQuestion * 1000);
+            setTimeout(() => { this.loadNextQuestion(); }, this.timeTilNextQuestion * 1000);
         }
     },
 
-    loadNextQuestion: function() {
+    loadNextQuestion: function () {
         questionTime(true);
         //Boring but we're just going to keep iterating through the list.
         debugger;
         this.questionIndex++;
-        if(this.questionIndex >= this.questions.length) {
+        if (this.questionIndex >= this.questions.length) {
             this.triggerEndScreen();
         }
         else {
@@ -91,38 +91,136 @@ const triviaGame = {
             $("#option2").text(this.questions[this.questionIndex].possibleAnswers[1]);
             $("#option3").text(this.questions[this.questionIndex].possibleAnswers[2]);
             $("#option4").text(this.questions[this.questionIndex].possibleAnswers[3]);
-           
-            this.timer = setInterval(() => {this.tick();}, 1000);
+
+            this.timer = setInterval(() => { this.tick(); }, 1000);
         }
     },
 
-    triggerEndScreen: function() {
+    triggerEndScreen: function () {
         questionTime(false);
 
     },
 
-    mixUpTheQuestions: function() {
+    mixUpTheQuestions: function () {
         let currentIndex = this.questions.length, temporaryValue, randomIndex;
-      
-        while (0 !== currentIndex) {      
-          randomIndex = Math.floor(Math.random() * currentIndex);
-          currentIndex -= 1;
-      
-          temporaryValue = this.questions[currentIndex];
-          this.questions[currentIndex] = this.questions[randomIndex];
-          this.questions[randomIndex] = temporaryValue;
-        }
-      },
-      
 
-    resetGame: function() {
+        while (0 !== currentIndex) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            temporaryValue = this.questions[currentIndex];
+            this.questions[currentIndex] = this.questions[randomIndex];
+            this.questions[randomIndex] = temporaryValue;
+        }
+    },
+
+
+    resetGame: function () {
         this.correctAnswers = 0;
         this.incorrectAnswers = 0;
         this.unanswered = 0;
-        this.questionIndex = -1; 
+        this.questionIndex = -1;
 
-        this.mixUpTheQuestions();        
+        this.mixUpTheQuestions();
         this.loadNextQuestion();
+    }
+}
+
+class ConfettiFeature {
+    //This class requires jQuery and the following html/css
+    // CSS
+    // body {
+    //     margin: 0;
+    //     overflow: hidden;
+    //   }
+
+    //   .confettiArea {
+    //     position: relative;
+    //     min-height: 100vh;
+    //   }
+
+    //   [class|="confetti"] {
+    //     position: absolute;
+    //   }
+
+    //   .redConfetti {
+    //     background-color: #E94A3F;
+    //   }
+
+    //   .yellowConfetti {
+    //     background-color: #FAA040;
+    //   }
+
+    //   .blueConfetti {
+    //     background-color: #5FC9F5;
+    //   }
+
+    // HTML
+    // a class of confettiArea in the appropriate area.
+
+    constructor(count = 250, width = 8, ratio = 0.4, options = ["Yes!"]) {
+        this.confettiAcount = count;
+        this.confettiWidth = width;
+        this.confettiRatio = ratio;
+        this.active = false;
+    }
+
+    start() {
+        this.active = true;
+        for (let i = 0; i < this.confettiAcount; i++) {
+            this.create(i);
+        }
+    }
+
+    stop() {
+        this.active = false;
+    }
+
+    create(i) {
+        const width = Math.random() * this.confettiWidth;
+        const height = width * this.confettiRatio;
+        let colour;
+        switch (Math.ceil(Math.random() * 3)) { //Add more or change them if you like.
+            case 1:
+                colour = "yellowConfetti";
+                break;
+            case 2:
+                colour = "blueConfetti";
+                break;
+            default:
+                colour = "redConfetti";
+        }
+        $('<div class="confetti-' + i + ' ' + colour + '"></div>').css({
+            "width": width + "px",
+            "height": height + "px",
+            "top": -Math.random() * 20 + "%",
+            "left": Math.random() * 100 + "%",
+            "opacity": Math.random() + 0.5,
+            "transform": "rotate(" + Math.random() * 360 + "deg)"
+        }).appendTo('.confettiArea');
+
+        this.drop(i);
+    }
+
+    drop(x) {
+        $('.confetti-' + x).animate({
+            top: "100%",
+            left: "+=" + Math.random() * 15 + "%"
+        }, Math.random() * 3000 + 3000, () => { if (confetti.active) { confetti.reset(x); } });
+        // function() {
+        //     debugger;
+        //     if(this.active) {
+        //     this.reset(x);}
+        // });
+    }
+
+    reset(x) {
+        $('.confetti-' + x).animate({
+            "top": -Math.random() * 20 + "%",
+            "left": "-=" + Math.random() * 15 + "%"
+        }, 0, () => {
+            this.drop(x);
+        });
     }
 }
 
@@ -141,12 +239,13 @@ function setQuestions() {
 }
 setQuestions();  //There isn't much use for defining the function at this time.
 
+const confetti = new ConfettiFeature();
 
 //dom events
-$("#start").on("click", function() {
+$("#start").on("click", function () {
     triviaGame.loadNextQuestion();
 });
 
-$(".options").on("click", function() {
+$(".options").on("click", function () {
     triviaGame.answerQuestion(this.innerText);
 });
