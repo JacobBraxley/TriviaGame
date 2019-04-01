@@ -5,6 +5,11 @@ const TriviaQuestion = class TriviaItem {
         this.possibleAnswers = options;
     }
 
+    correctAnswer() {
+        debugger;
+        return this.possibleAnswers[this.correctAnswerIndex];
+    }
+
     evaluateGuess(guess) {
         return (this.correctAnswerIndex === this.possibleAnswers.indexOf(guess));
     }
@@ -24,7 +29,7 @@ const triviaGame = {
     incorrectAnswers: 0,
     unanswered: 0,
 
-    timeoutForAQuestion: 150000,
+    timeoutForAQuestion: 15,
     timeTilNextQuestion: 2,
 
     questions: [],
@@ -40,6 +45,9 @@ const triviaGame = {
             confetti.start();
 
         } else {
+            debugger;
+            $(".question").text("The Correct Answer was: "+ this.questions[this.questionIndex].correctAnswer());
+            //$(".question").text(this.questions[this.questionIndex].possibleAnswers[this.questions[this.questionIndex].correctAnswerIndex]);
             this.incorrectAnswers++;
             const audio = new Audio('assets/sounds/error.mp3');
             audio.play();
@@ -206,7 +214,7 @@ function setQuestions() {
         new TriviaQuestion("Which of the component is used for a primary display area?", 1, ["bigscreen", "jumbotron", "maindisplay", "div"]),
         new TriviaQuestion("Which of the following is used to define a bootstrap grid?", 2, ["box", "grid", "container", "object"]),
         new TriviaQuestion("Which do you use to change the style of an item from one state to another?", 0, ["animate", "new", "change", "overwrite"]),
-        new TriviaQuestion("Which class do you include to create shadow boxes with Bootstrap?", 0, ["fade", "depth", "shadow", "borderbox"]),
+        new TriviaQuestion("Which class do you include to create shadow boxes with Bootstrap?", 2, ["fade", "depth", "shadow", "borderbox"]),
         new TriviaQuestion("Which of the following do you use to control the look of your website for different devices?", 1, ["@display", "@media", "@displaysize", "@query"]),
         new TriviaQuestion("Which do you use to add a video to your website?", 3, ["htmltube", "media", "play", "video"]),
         new TriviaQuestion("Which of the following display types should you use to make a responsive element?", 0, ["flex", "block", "inline", "none"]),
@@ -214,7 +222,7 @@ function setQuestions() {
     ];
 
     //Now lets randomize them.
-    let currentIndex = triviaGame.questions.length, temporaryValue, randomIndex;
+    let currentIndex = questions.length, temporaryValue, randomIndex;
 
     while (0 !== currentIndex) {
         randomIndex = Math.floor(Math.random() * currentIndex);
